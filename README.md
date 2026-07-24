@@ -16,7 +16,7 @@ The Student Feedback Automation System is a responsive web application built wit
 * Automated feedback storage
 * Automated notifications
 
-## Technologies Used
+## Tech Stack
 
 * React
 * Vite
