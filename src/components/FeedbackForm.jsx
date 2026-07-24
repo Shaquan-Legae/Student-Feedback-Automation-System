@@ -99,8 +99,26 @@ const FeedbackForm = () => {
         try {
             setLoading(true);
 
-            // TODO: Replace with your n8n webhook
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            const response = await fetch(
+                "https://shaquan.app.n8n.cloud/webhook-test/student-feedback",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        studentName: form.studentName,
+                        email: form.email,
+                        course: form.course,
+                        rating,
+                        feedback: form.feedback,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to submit feedback.");
+            }
 
             setAlert({
                 type: "success",
@@ -109,7 +127,7 @@ const FeedbackForm = () => {
 
             resetForm();
         } catch (error) {
-            console.error("Submission failed:", error);
+            console.error(error);
 
             setAlert({
                 type: "error",
