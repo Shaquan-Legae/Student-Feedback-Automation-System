@@ -161,6 +161,266 @@ Create a `.env` file in the root directory of the React project:
 VITE_N8N_WEBHOOK_URL=your_n8n_production_webhook_url
 ```
 
+# n8n Automation Workflow
+
+The Student Feedback Automation System uses n8n to automate the processing of student feedback submissions.
+
+The workflow receives feedback from the React frontend through a webhook, validates the submitted information, classifies feedback based on rating, stores the response in Google Sheets, and sends an automated email notification.
+
+## n8n Workflow Overview
+
+~~~text
+React Feedback Form
+        |
+        ↓
+Webhook Trigger
+        |
+        ↓
+Data Validation
+        |
+        ↓
+Rating Classification
+        |
+        ↓
+Google Sheets Storage
+        |
+        ↓
+Email Notification
+~~~
+
+---
+
+# Workflow Setup
+
+## 1. Webhook Trigger Node
+
+The workflow starts with a Webhook node that receives feedback submissions from the React application.
+
+### Configuration
+
+~~~text
+Node Type:
+Webhook
+
+HTTP Method:
+POST
+
+Path:
+student-feedback
+
+Response Mode:
+Immediately
+~~~
+
+The React application sends feedback data using a POST request.
+
+Example request data:
+
+~~~json
+{
+  "studentName": "Kamogelo Legae",
+  "email": "student@example.com",
+  "course": "AI101",
+  "rating": 5,
+  "feedback": "The course content was very helpful."
+}
+~~~
+
+---
+
+# 2. Data Validation
+
+After receiving the feedback, the workflow validates that all required information has been provided.
+
+## Required Fields
+
+~~~text
+✓ Student Name
+✓ Email Address
+✓ Course Name
+✓ Rating
+✓ Feedback Message
+~~~
+
+If validation fails:
+
+~~~text
+Webhook
+   |
+   ↓
+Validation
+   |
+   ↓
+Stop Workflow
+~~~
+
+If validation succeeds:
+
+~~~text
+Webhook
+   |
+   ↓
+Validation
+   |
+   ↓
+Continue Processing
+~~~
+
+---
+
+# 3. Rating Classification
+
+The workflow evaluates the student's rating using conditional logic.
+
+## Logic
+
+~~~text
+IF Rating <= 2
+
+Category:
+Needs Improvement
+
+
+IF Rating > 2
+
+Category:
+Positive Feedback
+~~~
+
+Workflow:
+
+~~~text
+              Rating Check
+                   |
+        ┌──────────┴──────────┐
+        ↓                     ↓
+   Rating <= 2           Rating > 2
+        ↓                     ↓
+Needs Improvement     Positive Feedback
+~~~
+
+---
+
+# 4. Google Sheets Storage
+
+After processing the feedback, the information is stored in Google Sheets.
+
+## Configuration
+
+~~~text
+Node Type:
+Google Sheets
+
+Operation:
+Append Row
+~~~
+
+Stored information:
+
+| Field | Description |
+|---|---|
+| Student Name | Student who submitted feedback |
+| Email | Student email address |
+| Course | Course being reviewed |
+| Rating | Rating value from 1-5 |
+| Feedback | Written feedback message |
+| Category | Feedback classification |
+
+---
+
+# 5. Email Notification
+
+After storing the feedback, an automated confirmation email is sent.
+
+## Configuration
+
+~~~text
+Node Type:
+Gmail
+
+Action:
+Send Email
+~~~
+
+Example email:
+
+~~~text
+Subject:
+Feedback Submission Received
+
+Message:
+
+Hello {{studentName}},
+
+Thank you for submitting your feedback.
+
+Your response has been successfully recorded.
+
+We appreciate your time and input.
+
+Regards,
+Student Feedback System
+~~~
+
+---
+
+# Production Webhook Configuration
+
+The React application uses the production webhook URL.
+
+~~~text
+Production:
+https://your-n8n-instance.com/webhook/student-feedback
+
+Test:
+https://your-n8n-instance.com/webhook-test/student-feedback
+~~~
+
+The production webhook only works when the workflow is published.
+
+---
+
+# Complete n8n Workflow
+
+~~~text
+                 React Application
+                        |
+                        ↓
+              Webhook Trigger (POST)
+                        |
+                        ↓
+              Validate Feedback Data
+                        |
+                        ↓
+              Rating Classification
+                        |
+             ┌──────────┴──────────┐
+             ↓                     ↓
+       Rating <= 2            Rating > 2
+             ↓                     ↓
+   Needs Improvement      Positive Feedback
+             |
+             ↓
+        Google Sheets
+             |
+             ↓
+       Gmail Notification
+~~~
+
+---
+
+# Testing the Workflow
+
+1. Start the React application.
+2. Complete the feedback form.
+3. Submit feedback.
+4. Confirm the webhook receives the request.
+5. Check the n8n execution history.
+6. Verify the data appears in Google Sheets.
+7. Confirm the email notification is sent.
+
+This automation removes manual feedback processing by automatically collecting, analysing, storing, and responding to student feedback.
+
 ## Prerequisites
 
 Before installing the project, ensure you have the following installed:
@@ -169,25 +429,10 @@ Before installing the project, ensure you have the following installed:
 - npm (comes with Node.js)
 - Git
 
-### n8n Workflow Configuration
-
-The project uses n8n to automate feedback processing. The React application sends submitted feedback data to an n8n webhook, where it is processed, stored, classified, and used to trigger email notifications.
-
-#### n8n Setup
-
-#### 1. Create Webhook Trigger
-
-Create a new workflow in n8n and add a **Webhook** node.
-
-Configure the node:
-
-```
-HTTP Method: POST
-Path: student-feedback
-Response Mode: Immediately
-```
 Verify your installations:
 
 ```bash
 node -v
 ```
+
+
