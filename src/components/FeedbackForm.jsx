@@ -100,7 +100,7 @@ const FeedbackForm = () => {
             setLoading(true);
 
             const response = await fetch(
-                "https://shaquan.app.n8n.cloud/webhook-test/student-feedback",
+                "https://shaquan.app.n8n.cloud/webhook/student-feedback",
                 {
                     method: "POST",
                     headers: {
