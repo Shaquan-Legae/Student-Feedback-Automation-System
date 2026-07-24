@@ -100,7 +100,7 @@ const FeedbackForm = () => {
             setLoading(true);
 
             const response = await fetch(
-                "https://shaquan.app.n8n.cloud/webhook-test/student-feedback",
+                "https://shaquan.app.n8n.cloud/webhook/student-feedback",
                 {
                     method: "POST",
                     headers: {
@@ -143,10 +143,6 @@ const FeedbackForm = () => {
             onSubmit={handleSubmit}
             className="mx-auto w-full max-w-xl rounded-2xl bg-white p-8 shadow-lg"
         >
-            <Alert
-                type={alert.type}
-                message={alert.message}
-            />
 
             <InputField
                 label="Student Name"
@@ -204,6 +200,11 @@ const FeedbackForm = () => {
                 rows={5}
                 onChange={handleChange}
                 error={errors.feedback}
+            />
+
+            <Alert
+                type={alert.type}
+                message={alert.message}
             />
 
             <Button
