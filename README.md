@@ -1,72 +1,193 @@
 # Student Feedback Automation System
 
-## Overview
+A full-stack feedback collection system that allows students to submit course feedback through a React web application. Submitted feedback is automatically processed using an n8n workflow, stored in Google Sheets, evaluated based on rating, and followed by an automated email response.
 
-The Student Feedback Automation System is a responsive web application built with React that allows students to submit feedback through an easy-to-use form. The application integrates with an n8n workflow to automate feedback processing, storage, and notifications.
+## Project Overview
+
+The Student Feedback Automation System automates the process of collecting and managing student feedback.
+
+The system connects a React frontend with n8n workflow automation to receive submissions, validate information, store responses, classify feedback based on rating, and send automated email notifications.
 
 ## Features
 
-* Responsive and modern user interface
-* Student feedback form
-* Client-side form validation
-* Rating system (1–5)
-* Fetch API integration
-* Success and error notifications
-* n8n workflow integration
-* Automated feedback storage
-* Automated notifications
+### Frontend Application
 
-## Tech Stack
+- Responsive feedback form interface
+- Student name input
+- Email address input
+- Course name input
+- 1-5 star rating system
+- Feedback message input
+- Client-side validation
+- Loading state during submission
+- Success and error notifications
+- Fetch API integration with n8n webhook
 
-* React
-* Vite
-* JavaScript
-* Tailwind CSS
-* Fetch API
-* n8n
+### Automation Workflow
 
-## Getting Started
+- Receives feedback through an n8n webhook
+- Validates submitted data
+- Stores responses in Google Sheets
+- Applies rating-based feedback classification:
+  - Rating 1-2: Needs Improvement
+  - Rating 3-5: Positive Feedback
+- Sends automated confirmation emails
 
-### Prerequisites
+## Technologies Used
 
-* Node.js
-* npm
+### Frontend
 
-### Installation
+- React.js
+- JavaScript
+- Tailwind CSS
+- Fetch API
 
-```bash
-git clone <repository-url>
-cd student-feedback-system
-npm install
-```
+### Automation
 
-### Run the Application
+- n8n Workflow Automation
+- Webhook Trigger
+- Conditional Logic
+- Google Sheets Integration
+- Gmail Integration
 
-```bash
-npm run dev
-```
+### Storage
 
-The application will be available at:
-
-```
-http://localhost:5173
-```
+- Google Sheets
 
 ## Project Structure
 
 ```
-src/
-├── assets/
-├── components/
-├── pages/
-├── styles/
-├── App.jsx
-└── main.jsx
+Student-Feedback-Automation-System/
+│
+├── src/
+│   ├── components/
+│   │   ├── Alert.jsx
+│   │   ├── Button.jsx
+│   │   ├── InputField.jsx
+│   │   ├── Rating.jsx
+│   │   ├── TextArea.jsx
+│   │   └── FeedbackForm.jsx
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
+├── public/
+│
+├── package.json
+├── package-lock.json
+├── tailwind.config.js
+├── vite.config.js
+└── README.md
+```
+## System Workflow
+
+```
+Student Feedback Form
+          |
+          ↓
+React Application
+          |
+          ↓
+n8n Webhook
+          |
+          ↓
+Data Validation
+          |
+          ↓
+Rating Evaluation
+          |
+     ┌───────────────┐
+     ↓               ↓
+Rating ≤ 2       Rating > 2
+     ↓               ↓
+Needs            Positive
+Improvement      Feedback
+     ↓               ↓
+          Google Sheets
+                 |
+                 ↓
+          Automated Email
+```
+## Form Fields
+
+The application collects the following student feedback information:
+
+| Field | Description | 
+
+| Student Name  | Captures the student's full name |
+| Email Address | Captures the student's email for confirmation notifications |
+| Course Name   | Identifies the course being evaluated |
+| Rating        | Allows students to provide a rating from 1 to 5 stars |
+| Feedback      | Allows students to provide detailed feedback about the course |
+
+## Form Validation
+
+The system performs client-side validation before submission:
+
+- Student name cannot be empty
+- Email address must be provided and follow a valid format
+- Course name is required
+- A rating between 1 and 5 must be selected
+- Feedback message cannot be empty
+
+If validation fails, the user receives an error message and must correct the highlighted fields before submitting.
+
+## Feedback Submission Process
+
+When a student submits feedback:
+
+1. The React application validates the entered information.
+2. The feedback data is converted into JSON format.
+3. The data is sent to the n8n production webhook using a POST request.
+4. The n8n workflow processes and stores the feedback.
+5. The student receives a confirmation notification after successful submission.
+
+## Installation and Setup
+
+Follow the steps below to run the project locally.
+
+## Environment Configuration
+
+The application communicates with an n8n automation workflow through a production webhook URL.
+
+Before running the application, configure the webhook endpoint used for submitting feedback.
+
+### Create Environment File
+
+Create a `.env` file in the root directory of the React project:
+
+```
+VITE_N8N_WEBHOOK_URL=your_n8n_production_webhook_url
 ```
 
-## Future Enhancements
+## Prerequisites
 
-* Google Sheets integration
-* Email notifications
-* Dashboard for submitted feedback
-* Analytics and reporting
+Before installing the project, ensure you have the following installed:
+
+- Node.js (Latest LTS version recommended)
+- npm (comes with Node.js)
+- Git
+
+### n8n Workflow Configuration
+
+The project uses n8n to automate feedback processing. The React application sends submitted feedback data to an n8n webhook, where it is processed, stored, classified, and used to trigger email notifications.
+
+#### n8n Setup
+
+#### 1. Create Webhook Trigger
+
+Create a new workflow in n8n and add a **Webhook** node.
+
+Configure the node:
+
+```
+HTTP Method: POST
+Path: student-feedback
+Response Mode: Immediately
+```
+Verify your installations:
+
+```bash
+node -v
+```
